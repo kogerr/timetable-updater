@@ -1,0 +1,11 @@
+jasypt:
+    encryptor:
+        password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+spring:
+  data:
+    mongodb:
+      host: 217.163.11.185
+      port: 27017
+      database: pd-db_test
+      username: pd-db_test-user
+      password: ENC(erzWky5kKS9IJVpqhLa3vN1ZDrCEt0b5ToRGmyI/swY=)
