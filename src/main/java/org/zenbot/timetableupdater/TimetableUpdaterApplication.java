@@ -2,16 +2,12 @@ package org.zenbot.timetableupdater;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.jsoup.Jsoup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 @Slf4j

@@ -6,7 +6,10 @@ import org.springframework.stereotype.Component;
 import org.zenbot.timetableupdater.dao.RouteRepository;
 import org.zenbot.timetableupdater.domain.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
