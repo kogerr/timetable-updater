@@ -48,7 +48,7 @@ public class BatchConfiguration {
                     try {
                         return new UrlResource(location);
                     } catch (MalformedURLException e) {
-                        log.error("Invalid html resouce location [{}]", location);
+                        log.error("{}", e);
                         return null;
                     }
                 })

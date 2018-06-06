@@ -11,5 +11,5 @@ public class BusArrival {
     @Id
     private String id;
     private boolean lowfloor;
-    private Integer arrivalMinute;
+    private int arrivalMinute;
 }
