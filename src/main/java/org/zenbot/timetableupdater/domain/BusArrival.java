@@ -11,5 +11,7 @@ public class BusArrival {
     @Id
     private String id;
     private boolean lowfloor;
-    private int arrivalMinute;
+    private int arrivalHour;
+    // Might be null as there could be no arrival in a particular hour
+    private Integer arrivalMinute;
 }
