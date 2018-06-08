@@ -23,6 +23,7 @@ public class TimetableProcessor implements ItemProcessor<String, Timetable> {
     public static final String WEEKDAY_KEY = "weekday";
     public static final String SATURDAY_KEY = "saturday";
     public static final String SUNDAY_KEY = "sunday";
+    public static final String STATIONS_SELECTOR = "#art-main > div > div.art-layout-wrapper > div > div > div > div > div.art-postcontent > table > tbody > tr > td > center > table.stations";
 
     @Override
     public Timetable process(String html) throws Exception {
@@ -67,7 +68,11 @@ public class TimetableProcessor implements ItemProcessor<String, Timetable> {
     }
 
     private void setEndBusStopName(Document htmlDocument, Timetable timetable) {
-        String to = null;
+        Elements stationsTable = htmlDocument.select(STATIONS_SELECTOR);
+        stationsTable.select(TABLE_ROW_SELECTOR).size();
+        int indexOfEndBusStop = stationsTable.select(TABLE_ROW_SELECTOR).size() - 2;
+        Elements rows = stationsTable.select(TABLE_ROW_SELECTOR);
+        String to = rows.get(indexOfEndBusStop).select(TABLE_COLUMN_SELECTOR).get(2).text();
         timetable.setEndBusStopName(to);
     }
 

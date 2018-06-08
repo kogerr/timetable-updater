@@ -7,7 +7,6 @@ import org.zenbot.timetableupdater.dao.RouteRepository;
 import org.zenbot.timetableupdater.domain.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,33 +24,34 @@ public class TimetableItemWriter implements ItemWriter<Timetable> {
     public void write(List<? extends Timetable> list) {
         checkConstraints(list);
         Timetable timetable = list.get(0);
-        log.info("Writing route [#{} from={}, stop={}] to database", timetable.getRouteName(), timetable.getStartBusStopName(), timetable.getActiveStopName());
-        Route route = getRoute(timetable);
-        RoutePath routePath = getRoutePath(timetable, route);
-        BusStopTimetable busStopTimetable = new BusStopTimetable();
+        log.info("Writing busRoute [#{} from={}, stop={}] to database", timetable.getRouteName(), timetable.getStartBusStopName(), timetable.getActiveStopName());
+        BusRoute busRoute = getRoute(timetable);
+        BusRouteLine busRouteLine = getRoutePath(timetable, busRoute);
+        BusStop busStop = new BusStop();
 
-        buildBusStopTimeTable(timetable, busStopTimetable);
-        setRoutePathProperties(routePath, timetable, route, busStopTimetable);
-        addRoutePath(route, routePath);
+        buildBusStopTimeTable(timetable, busStop);
+        setRoutePathProperties(busRouteLine, timetable, busStop);
+        addRoutePath(busRoute, busRouteLine);
 
-        log.info("Saving to database [#{}]", route.getRoutename());
-        routeRepository.save(route);
+        log.info("Saving to database [#{}]", busRoute.getRoutename());
+        routeRepository.save(busRoute);
     }
 
-    private void addRoutePath(Route route, RoutePath routePath) {
-        if (route.hasNoRoutePath(routePath)) {
-            route.getRoutePaths().add(routePath);
+    private void addRoutePath(BusRoute busRoute, BusRouteLine busRouteLine) {
+        if (busRoute.hasNoRoutePath(busRouteLine)) {
+            busRoute.getBusRouteLines().add(busRouteLine);
         }
     }
 
-    private void setRoutePathProperties(RoutePath routePath, Timetable timetable, Route route, BusStopTimetable busStopTimetable) {
-        routePath.addBusStopTimetable(busStopTimetable);
-        routePath.setStartBusStop(timetable.getStartBusStopName());
+    private void setRoutePathProperties(BusRouteLine busRouteLine, Timetable timetable, BusStop busStop) {
+        busRouteLine.addBusStopTimetable(busStop);
+        busRouteLine.setStartBusStop(timetable.getStartBusStopName());
+        busRouteLine.setEndBusStop(timetable.getEndBusStopName());
     }
 
-    private void buildBusStopTimeTable(Timetable timetable, BusStopTimetable busStopTimetable) {
+    private void buildBusStopTimeTable(Timetable timetable, BusStop busStop) {
         log.debug("Setting bust stop properties");
-        busStopTimetable.setBusStopName(timetable.getActiveStopName());
+        busStop.setBusStopName(timetable.getActiveStopName());
         Schedule workdaySchedule = new Schedule();
         Schedule saturdaySchedule = new Schedule();
         Schedule sundaySchedule = new Schedule();
@@ -60,14 +60,14 @@ public class TimetableItemWriter implements ItemWriter<Timetable> {
         setScheduleValues(timetable, saturdaySchedule, TimetableProcessor.SATURDAY_KEY);
         setScheduleValues(timetable, sundaySchedule, TimetableProcessor.SUNDAY_KEY);
 
-        busStopTimetable.setWorkDaySchedule(workdaySchedule);
-        busStopTimetable.setSaturdaySchedule(saturdaySchedule);
-        busStopTimetable.setSundaySchedule(sundaySchedule);
+        busStop.setWorkDaySchedule(workdaySchedule);
+        busStop.setSaturdaySchedule(saturdaySchedule);
+        busStop.setSundaySchedule(sundaySchedule);
     }
 
     private void setScheduleValues(Timetable timetable, Schedule workdaySchedule, String day) {
         log.debug("Building schedule for day: [{}]", day);
-        Map<Integer, List<BusArrival>> busArrivalsByHour = new HashMap<>();
+        List<BusArrival> busArrivalsByHour = new ArrayList<>();
         for (Map.Entry<Integer, Map<String, String>> entries : timetable.getTimetable().entrySet()) {
             Integer key = entries.getKey();
             Map<String, String> value = entries.getValue();
@@ -76,30 +76,31 @@ public class TimetableItemWriter implements ItemWriter<Timetable> {
             List<BusArrival> busArrivals = new ArrayList<>();
             for (String arrival : arrivalsSplitted) {
                 BusArrival busArrival = new BusArrival();
+                busArrival.setArrivalHour(key);
                 busArrival.setArrivalMinute(arrival.isEmpty() ? null : Integer.valueOf(arrival));
                 busArrivals.add(busArrival);
             }
-            busArrivalsByHour.put(key, busArrivals);
+            busArrivalsByHour.addAll(busArrivals);
         }
-        workdaySchedule.setBusArrivalsByHour(busArrivalsByHour);
+        workdaySchedule.setBusArrivals(busArrivalsByHour);
 
     }
 
-    private RoutePath getRoutePath(Timetable timetable, Route route) {
-        log.debug("Fetching routepath from route [#{}]", route.getRoutename());
-        return route.getRoutePathByStartStopName(timetable.getStartBusStopName());
+    private BusRouteLine getRoutePath(Timetable timetable, BusRoute busRoute) {
+        log.debug("Fetching routepath from busRoute [#{}]", busRoute.getRoutename());
+        return busRoute.getRoutePathByStartStopName(timetable.getStartBusStopName());
     }
 
-    private Route getRoute(Timetable timetable) {
-        log.debug("Fetching route from database");
-        Route route = routeRepository.findByRoutename(timetable.getRouteName());
-        if (route == null) {
-            log.debug("Route not found! Creating a new one!");
-            route = new Route();
-            route.setRoutePaths(new ArrayList<>());
+    private BusRoute getRoute(Timetable timetable) {
+        log.debug("Fetching busRoute from database");
+        BusRoute busRoute = routeRepository.findByRoutename(timetable.getRouteName());
+        if (busRoute == null) {
+            log.debug("BusRoute not found! Creating a new one!");
+            busRoute = new BusRoute();
+            busRoute.setBusRouteLines(new ArrayList<>());
         }
-        route.setRoutename(timetable.getRouteName());
-        return route;
+        busRoute.setRoutename(timetable.getRouteName());
+        return busRoute;
     }
 
     private void checkConstraints(List<? extends Timetable> list) {

@@ -1,9 +1,9 @@
 package org.zenbot.timetableupdater.dao;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.zenbot.timetableupdater.domain.Route;
+import org.zenbot.timetableupdater.domain.BusRoute;
 
-public interface RouteRepository extends MongoRepository<Route, String> {
+public interface RouteRepository extends MongoRepository<BusRoute, String> {
 
-    Route findByRoutename(String routename);
+    BusRoute findByRoutename(String routename);
 }

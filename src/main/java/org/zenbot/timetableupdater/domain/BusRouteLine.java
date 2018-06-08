@@ -15,6 +15,7 @@ public class BusRouteLine {
     @Id
     private String id;
     private String startBusStop;
+    private String endBusStop;
     private List<BusStop> busStops;
 
     public void addBusStopTimetable(BusStop busStop) {
