@@ -1,6 +1,5 @@
 package org.zenbot.timetableupdater;
 
-import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +11,6 @@ import java.net.URL;
 
 @Slf4j
 @SpringBootApplication
-@EnableEncryptableProperties
 public class TimetableUpdaterApplication {
 
 	public static void main(String[] args) throws IOException {
