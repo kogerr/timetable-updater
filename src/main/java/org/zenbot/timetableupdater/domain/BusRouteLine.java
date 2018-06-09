@@ -19,22 +19,6 @@ public class BusRouteLine {
     private List<BusStop> busStops;
 
     public void addBusStopTimetable(BusStop busStop) {
-        log.debug("Adding bus stop timetable");
-        if (busStops.contains(busStop)) {
-            log.debug("Timetable for bus stop [{}] found in route path!", busStop.getBusStopName());
-            log.debug("Updating data");
-            BusStop toUpdate = busStops.stream()
-                    .filter(timetable -> timetable.getBusStopName().equals(busStop.getBusStopName()))
-                    .findFirst()
-                    .get();
-            toUpdate.setSundaySchedule(busStop.getSundaySchedule());
-            toUpdate.setSaturdaySchedule(busStop.getSaturdaySchedule());
-            toUpdate.setWorkDaySchedule(busStop.getWorkDaySchedule());
-            toUpdate.setBusStopName(busStop.getBusStopName());
-        } else {
-            log.debug("Timetable for bus stop [{}] NOT found in route path!", busStop.getBusStopName());
-            log.debug("Adding a new one");
-            busStops.add(busStop);
-        }
+        busStops.add(busStop);
     }
 }

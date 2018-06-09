@@ -2,6 +2,7 @@ package org.zenbot.timetableupdater.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -30,13 +31,15 @@ public class BatchConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
     private final ItemProcessor<String, Timetable> itemProcessor;
     private final ItemWriter<Timetable> itemWriter;
+    private final JobExecutionListener jobExecutionListener;
     private final TimetableResourceLocationProperties resourceLocationProperties;
 
-    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ItemProcessor<String, Timetable> itemProcessor, ItemWriter<Timetable> itemWriter, TimetableResourceLocationProperties resourceLocationProperties) {
+    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ItemProcessor<String, Timetable> itemProcessor, ItemWriter<Timetable> itemWriter, JobExecutionListener jobExecutionListener, TimetableResourceLocationProperties resourceLocationProperties) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.itemProcessor = itemProcessor;
         this.itemWriter = itemWriter;
+        this.jobExecutionListener = jobExecutionListener;
         this.resourceLocationProperties = resourceLocationProperties;
     }
 
@@ -64,6 +67,7 @@ public class BatchConfiguration {
     public Job importTimetableJob() {
         return jobBuilderFactory
                 .get("importTimetableJob")
+                .listener(jobExecutionListener)
                 .flow(importTimetableStep())
                 .end()
                 .build();

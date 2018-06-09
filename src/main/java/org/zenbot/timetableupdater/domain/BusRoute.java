@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @Document
@@ -17,23 +19,22 @@ public class BusRoute {
     private List<BusRouteLine> busRouteLines;
 
     public BusRouteLine getRoutePathByStartStopName(String startBusStopName) {
-        BusRouteLine result = new BusRouteLine();
-        result.setBusStops(new ArrayList<>());
-        for (BusRouteLine busRouteLine : busRouteLines) {
-            if (busRouteLine.getStartBusStop().equals(startBusStopName)) {
-                result = busRouteLine;
-            }
+        Optional<BusRouteLine> routeLine = busRouteLines.stream()
+                .filter(line -> line.getStartBusStop().equals(startBusStopName))
+                .findFirst();
+        if (routeLine.isPresent()) {
+            return routeLine.get();
+        } else {
+            BusRouteLine result = new BusRouteLine();
+            result.setBusStops(new ArrayList<>());
+            return result;
         }
-        return result;
     }
 
     public boolean hasNoRoutePath(BusRouteLine busRouteLine) {
-        boolean result = true;
-        for (BusRouteLine busRouteLineItem : busRouteLines) {
-            if (busRouteLineItem.getStartBusStop().equals(busRouteLine.getStartBusStop())) {
-                result = false;
-            }
-        }
-        return result;
+        return busRouteLines.stream()
+                .map(line -> line.getStartBusStop())
+                .collect(Collectors.toList())
+                .contains(busRouteLine.getStartBusStop());
     }
 }
