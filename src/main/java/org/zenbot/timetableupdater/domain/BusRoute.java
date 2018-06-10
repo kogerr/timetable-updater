@@ -32,7 +32,7 @@ public class BusRoute {
     }
 
     public boolean hasNoRoutePath(BusRouteLine busRouteLine) {
-        return busRouteLines.stream()
+        return !busRouteLines.stream()
                 .map(line -> line.getStartBusStop())
                 .collect(Collectors.toList())
                 .contains(busRouteLine.getStartBusStop());
