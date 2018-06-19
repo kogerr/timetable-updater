@@ -3,8 +3,8 @@ spring:
     mongodb:
       host: 217.163.11.185
       port: 27017
-      database: pd-db_test
-      username: pd-db_test-user
+      database: szolnok-busdb
+      username: szolnokuser
 timetable:
   resources:
     locataions:
