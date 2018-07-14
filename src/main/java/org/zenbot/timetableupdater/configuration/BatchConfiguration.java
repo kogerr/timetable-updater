@@ -15,11 +15,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.zenbot.timetableupdater.batch.Timetable;
 import org.zenbot.timetableupdater.batch.TimetableReader;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -32,31 +32,32 @@ public class BatchConfiguration {
     private final ItemProcessor<String, Timetable> itemProcessor;
     private final ItemWriter<Timetable> itemWriter;
     private final JobExecutionListener jobExecutionListener;
-    private final TimetableResourceLocationProperties resourceLocationProperties;
+    private final ResourceReader resourceReader;
 
-    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ItemProcessor<String, Timetable> itemProcessor, ItemWriter<Timetable> itemWriter, JobExecutionListener jobExecutionListener, TimetableResourceLocationProperties resourceLocationProperties) {
+    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ItemProcessor<String, Timetable> itemProcessor, ItemWriter<Timetable> itemWriter, JobExecutionListener jobExecutionListener, ResourceReader resourceReader) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.itemProcessor = itemProcessor;
         this.itemWriter = itemWriter;
         this.jobExecutionListener = jobExecutionListener;
-        this.resourceLocationProperties = resourceLocationProperties;
+        this.resourceReader = resourceReader;
     }
 
     @Bean
-    public ItemReader<String> timetableReader() {
-        Resource[] resources = resourceLocationProperties.getLocataions()
-                .stream()
-                .map(location -> {
-                    try {
-                        return new UrlResource(location);
-                    } catch (MalformedURLException e) {
-                        log.error("{}", e);
-                        return null;
-                    }
-                })
-                .filter(resouce -> resouce != null)
-                .toArray(Resource[]::new);
+    public ItemReader<String> timetableReader() throws IOException {
+        Resource[] resources = resourceReader.readResources().stream().toArray(Resource[]::new);
+//        Resource[] resources = resourceLocationProperties.getLocataions()
+//                .stream()
+//                .map(location -> {
+//                    try {
+//                        return new UrlResource(location);
+//                    } catch (MalformedURLException e) {
+//                        log.error("{}", e);
+//                        return null;
+//                    }
+//                })
+//                .filter(resouce -> resouce != null)
+//                .toArray(Resource[]::new);
         MultiResourceItemReader<String> multiResourceItemReader = new MultiResourceItemReader<>();
         multiResourceItemReader.setResources(resources);
         multiResourceItemReader.setDelegate(new TimetableReader());
@@ -64,7 +65,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job importTimetableJob() {
+    public Job importTimetableJob() throws IOException {
         return jobBuilderFactory
                 .get("importTimetableJob")
                 .listener(jobExecutionListener)
@@ -74,7 +75,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step importTimetableStep() {
+    public Step importTimetableStep() throws IOException {
         return stepBuilderFactory
                 .get("importTimetableStep")
                 .<String, Timetable> chunk(1)

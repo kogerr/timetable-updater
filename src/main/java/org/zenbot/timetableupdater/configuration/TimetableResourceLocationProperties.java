@@ -8,5 +8,7 @@ import java.util.List;
 @Data
 @ConfigurationProperties("timetable.resources")
 public class TimetableResourceLocationProperties {
-    private List<String> locataions;
+    private String folder;
+    private String fileExtension;
+    private String commentSign;
 }
