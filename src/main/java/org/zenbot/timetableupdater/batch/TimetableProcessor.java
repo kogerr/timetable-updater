@@ -61,8 +61,11 @@ public class TimetableProcessor implements ItemProcessor<String, Timetable> {
     private void setActiveBusStopName(Document htmlDocument, Timetable timetable) {
         String actualStop = getHtmlText(htmlDocument, ACTUALSTOP_SELECTOR);
         actualStop = (String) actualStop.subSequence(actualStop.indexOf("(") + 1, actualStop.indexOf(")"));
-        if (actualStop.indexOf("(") > -1) {
+        if (actualStop.contains("(")) {
             actualStop += ")";
+        }
+        if (actualStop.endsWith(".")) {
+            actualStop = actualStop.substring(0, actualStop.length() - 1);
         }
         timetable.setActiveStopName(actualStop);
     }
