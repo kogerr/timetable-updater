@@ -27,7 +27,7 @@ public class RemoveRouteLinesExecutionListener implements JobExecutionListener {
     @Override
     public void beforeJob(JobExecution jobExecution) {
         List<String> activeProfilesList = Arrays.asList(environment.getActiveProfiles());
-        List<BusRoute> routes = routeRepository.findAll();
+        Iterable<BusRoute> routes = routeRepository.findAll();
         if (!activeProfilesList.isEmpty()) {
             log.info("Removing routelines [{}]", String.join(",", activeProfilesList));
             routes.forEach(route -> {
