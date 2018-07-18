@@ -8,7 +8,7 @@ data class BusRouteLine (
         var endBusStop: String = "",
         var busStops: MutableList<BusStop> = mutableListOf()
 ) {
-    fun addBusStopTimetable(busStop: BusStop) =  {
+    fun addBusStopTimetable(busStop: BusStop) {
         busStops.add(busStop)
     }
 }

@@ -1,9 +1,11 @@
 package org.zenbot.timetableupdater.domain
 
+import lombok.Data
 import org.springframework.data.annotation.Id
 import java.util.ArrayList
 import java.util.stream.Collectors
 
+@Data
 data class BusRoute (
         @Id var id: String? = null,
         var routename: String = "",
