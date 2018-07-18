@@ -6,5 +6,9 @@ data class BusRouteLine (
         @Id var id: String? = null,
         var startBusStop: String = "",
         var endBusStop: String = "",
-        var busStops: List<BusStop> = emptyList()
-)
+        var busStops: MutableList<BusStop> = mutableListOf()
+) {
+    fun addBusStopTimetable(busStop: BusStop) =  {
+        busStops.add(busStop)
+    }
+}

@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Schedule (
         @Id
         var id: String? = null,
-        var busArrivals: List<BusArrival> = emptyList()
+        var busArrivals: MutableList<BusArrival> = mutableListOf()
 )

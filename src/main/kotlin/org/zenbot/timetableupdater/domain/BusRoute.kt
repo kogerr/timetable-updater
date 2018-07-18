@@ -7,18 +7,18 @@ import java.util.stream.Collectors
 data class BusRoute (
         @Id var id: String? = null,
         var routename: String = "",
-        var busRouteLines: List<BusRouteLine> = emptyList()
+        var busRouteLines: MutableList<BusRouteLine> = mutableListOf()
 ) {
     fun getRoutePathByStartStopName(startBusStopName: String) : BusRouteLine {
         val routeLine = busRouteLines.stream()
                 .filter { line -> line.startBusStop == startBusStopName }
                 .findFirst()
-        if (routeLine.isPresent) {
-            return routeLine.get()
+        return if (routeLine.isPresent) {
+            routeLine.get()
         } else {
             val result = BusRouteLine()
-            result.busStops = ArrayList()
-            return result
+            result.busStops = mutableListOf()
+            result
         }
     }
 

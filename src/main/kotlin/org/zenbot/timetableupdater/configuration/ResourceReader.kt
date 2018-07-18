@@ -9,7 +9,7 @@ import java.io.File
 import java.io.IOException
 
 
-class ResourceReader(private val environment: Environment, private val properties: TimetableResourceLocationProperties) {
+open class ResourceReader(private val environment: Environment, private val properties: TimetableResourceLocationProperties) {
 
     val log = LoggerFactory.getLogger(this::class.java)
 
@@ -43,10 +43,10 @@ class ResourceReader(private val environment: Environment, private val propertie
     }
 
     private fun getFileResourcesByActiveProfiles(activeProfiles: Array<String>, resourceDirectory: File): List<File> {
-        activeProfiles.forEach { profile -> profile.plus(".${properties.fileExtension}") }
+        val activeProfileFilesNames = activeProfiles.map { activeProfile -> activeProfile.plus(".${properties.fileExtension}") }
         val files = resourceDirectory.listFiles()
         return if (activeProfiles.size > 0) {
-            files.filter { file -> activeProfiles.contains(file.name) }.toList()
+            files.filter { file -> activeProfileFilesNames.contains(file.name) }.toList()
         } else {
             files.asList()
         }

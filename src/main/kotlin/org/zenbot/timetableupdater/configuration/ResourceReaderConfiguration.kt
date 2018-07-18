@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment
 
 @Configuration
 @EnableConfigurationProperties(TimetableResourceLocationProperties::class)
-class ResourceReaderConfiguration(val environment: Environment, val properties: TimetableResourceLocationProperties) {
+open class ResourceReaderConfiguration(val environment: Environment, val properties: TimetableResourceLocationProperties) {
 
-    @Bean fun resourceReader() = ResourceReader(environment, properties)
+    @Bean open fun resourceReader() = ResourceReader(environment, properties)
 }
