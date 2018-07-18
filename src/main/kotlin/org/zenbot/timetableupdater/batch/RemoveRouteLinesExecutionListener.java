@@ -6,7 +6,6 @@ import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.zenbot.timetableupdater.dao.RouteRepository;
-import org.zenbot.timetableupdater.domain.BusRoute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
