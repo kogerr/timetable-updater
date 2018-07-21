@@ -18,11 +18,11 @@ open class RemoveRouteLinesExecutionListener(val routeRepository: RouteRepositor
             routes.forEach {
                 busRoute -> if (activeProfiles.contains(busRoute.routename)) busRoute.busRouteLines = ArrayList()
             }
+            routeRepository.saveAll(routes)
         } else {
-            routes.forEach{busRoute -> busRoute.busRouteLines = ArrayList()}
+            routeRepository.deleteAll()
 
         }
-        routeRepository.saveAll(routes)
     }
 
     override fun afterJob(jobExecution: JobExecution?){}
