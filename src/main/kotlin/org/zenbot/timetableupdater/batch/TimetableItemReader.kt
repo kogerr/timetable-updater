@@ -1,12 +1,15 @@
 package org.zenbot.timetableupdater.batch
 
+import org.jsoup.Connection
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 import org.springframework.batch.item.ExecutionContext
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream
 import org.springframework.core.io.Resource
+import java.net.URL
 
-class TimetableItemReader: ResourceAwareItemReaderItemStream<String> {
+class TimetableItemReader: ResourceAwareItemReaderItemStream<Document> {
 
     val log = LoggerFactory.getLogger(this::class.java)
 
@@ -35,12 +38,12 @@ class TimetableItemReader: ResourceAwareItemReaderItemStream<String> {
         this.resource = resource
     }
 
-    override fun read(): String? {
+    override fun read(): Document? {
         count++
         if (readNext) {
             return null
         }
         log.info("Reading html file [{}]", resource!!.getURL().toString())
-        return Jsoup.connect(resource!!.getURL().toString()).get().html()
+        return Jsoup.connect(resource!!.url.toString()).get()
     }
 }

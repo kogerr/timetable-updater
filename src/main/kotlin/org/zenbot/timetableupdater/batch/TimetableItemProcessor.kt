@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 import org.springframework.batch.item.ItemProcessor
 
-open class TimetableProcessor : ItemProcessor<String, Timetable> {
+open class TimetableProcessor : ItemProcessor<Document, Timetable> {
 
     private val log = LoggerFactory.getLogger(this::class.java)
     private val ROUTE_NAME_SELECTOR = "#art-main > div > div > div > div > div > div > div.art-postcontent > table > tbody > tr > td > center > table:nth-child(2) > tbody > tr > td > font > b"
@@ -21,17 +21,30 @@ open class TimetableProcessor : ItemProcessor<String, Timetable> {
     private val SUNDAY_KEY = "sunday"
 
     @Throws(Exception::class)
-    override fun process(html: String): Timetable {
-        val htmlDocument = Jsoup.parse(html)
+    override fun process(htmlDocument: Document): Timetable {
         val timetable = Timetable()
         setRoutename(htmlDocument, timetable)
         setStartBusStopName(htmlDocument, timetable)
         setEndBusStopName(htmlDocument, timetable)
         setActiveBusStopName(htmlDocument, timetable)
         setTimetable(htmlDocument, timetable)
+        replaceInvalidChars(timetable)
 
         log.info("Process html with routename [#{}] and timetable for [{}] stop", timetable.routeName, timetable.activeStopName)
         return timetable
+    }
+
+    private fun replaceInvalidChars(timetable: Timetable) {
+        timetable.startBusStopName = replaceInvalidChars(timetable.startBusStopName)
+        timetable.endBusStopName = replaceInvalidChars(timetable.endBusStopName)
+        timetable.activeStopName = replaceInvalidChars(timetable.activeStopName)
+    }
+
+    private fun replaceInvalidChars(string: String): String {
+        var result = string
+        result = result.replace("û", "ű")
+        result = result.replace("õ", "ő")
+        return result
     }
 
     private fun setTimetable(htmlDocument: Document, timetable: Timetable) {

@@ -1,5 +1,6 @@
 package org.zenbot.timetableupdater.configuration
 
+import org.jsoup.nodes.Document
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
@@ -29,15 +30,15 @@ open class BatchConfiguration(
 
     @Bean open fun importTimetableStep() = stepBuilderFactory
             .get("importTimetableStep")
-            .chunk<String, Timetable>(1)
+            .chunk<Document, Timetable>(1)
             .reader(timetableReader())
             .processor(itemProcessor())
             .writer(itemWriter())
             .build()
 
-    @Bean open fun timetableReader() : MultiResourceItemReader<String> {
+    @Bean open fun timetableReader() : MultiResourceItemReader<Document> {
         val resources = resourceReader.readResources()
-        val multiResourceItemReader = MultiResourceItemReader<String>()
+        val multiResourceItemReader = MultiResourceItemReader<Document>()
         multiResourceItemReader.setResources(resources.toTypedArray())
         multiResourceItemReader.setDelegate(timetableSimpleReader())
         return multiResourceItemReader
